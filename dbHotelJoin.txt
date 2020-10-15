@@ -1,0 +1,78 @@
+Come si chiamano gli ospiti che hanno fatto più di due prenotazioni?
+
+	SELECT ospite_id, COUNT(prenotazioni_has_ospiti.id) AS 'num prenotazioni', `name`, `lastname`
+	FROM `prenotazioni_has_ospiti`
+	INNER JOIN `ospiti`
+	ON ospiti.id = prenotazioni_has_ospiti.ospite_id
+	GROUP BY ospite_id
+	HAVING COUNT(prenotazioni_has_ospiti.id) > 2
+
+Stampare tutti gli ospiti per ogni prenotazione
+
+	SELECT prenotazione_id, ospite_id, `name`, `lastname`
+	FROM `prenotazioni_has_ospiti`
+	INNER JOIN `ospiti`
+	ON ospiti.id = prenotazioni_has_ospiti.ospite_id
+	ORDER BY prenotazione_id
+
+Stampare Nome, Cognome, Prezzo e Pagante per tutte le prenotazioni fatte a Maggio 2018
+	
+	!!controllare questo pezzo!!
+	
+	#versione originale che da troppi null
+	SELECT prenotazioni.created_at AS 'data_prenotazione', prenotazioni.id, ospiti.name AS 'nome_ospite', ospiti.lastname AS 'cognome_ospite', pagamenti.price, paganti.name AS 'nome_pagante', paganti.lastname AS 'cognome_pagante'
+	FROM prenotazioni
+	INNER JOIN prenotazioni_has_ospiti
+	ON prenotazioni.id = prenotazioni_has_ospiti.prenotazione_id
+	INNER JOIN ospiti
+	ON prenotazioni_has_ospiti.ospite_id = ospiti.id
+	LEFT JOIN paganti
+	ON ospiti.id = paganti.ospite_id
+	LEFT JOIN pagamenti
+	ON paganti.id = pagamenti.pagante_id
+	WHERE YEAR(prenotazioni.created_at) = 2018 AND MONTH(prenotazioni.created_at) = 5
+	ORDER BY prenotazioni.created_at
+	
+	#versione "alternativa" che sballa i prezzi 
+	SELECT prenotazioni.created_at AS 'data_prenotazione', prenotazioni.id, ospiti.name AS 'nome_ospite', ospiti.lastname AS 'cognome_ospite', pagamenti.price, paganti.name AS 'nome_pagante', paganti.lastname AS 'cognome_pagante'
+
+	FROM `prenotazioni`
+	INNER JOIN `prenotazioni_has_ospiti`
+	ON prenotazioni.id = prenotazioni_has_ospiti.prenotazione_id
+	INNER JOIN `ospiti`
+	ON prenotazioni_has_ospiti.ospite_id = ospiti.id
+	LEFT JOIN `paganti`
+	ON ospiti.id = paganti.ospite_id
+	LEFT JOIN pagamenti
+	ON prenotazioni.id = pagamenti.prenotazione_id
+	WHERE YEAR(prenotazioni.created_at) = 2018 AND MONTH(prenotazioni.created_at) = 5
+	ORDER BY prenotazioni.created_at
+
+Fai la somma di tutti i prezzi delle prenotazioni per le stanze del primo piano
+
+	SELECT stanze.floor, pagamenti.status, SUM( pagamenti.price) AS 'totale pagamenti'
+	FROM `prenotazioni`
+	INNER JOIN `stanze`
+	ON prenotazioni.stanza_id = stanze.id
+	INNER JOIN pagamenti
+	ON pagamenti.prenotazione_id = prenotazioni.id
+	WHERE stanze.floor = 1
+	AND pagamenti.status = 'accepted'
+
+Prendi i dati di fatturazione per la prenotazione con id=7
+	
+	SELECT prenotazioni.id, prenotazioni.created_at, paganti.name, paganti.lastname, paganti.address, pagamenti.price
+	FROM `prenotazioni` 
+	INNER JOIN `pagamenti`
+	ON pagamenti.prenotazione_id = prenotazioni.id
+	INNER JOIN `paganti`
+	ON paganti.id = pagamenti.pagante_id
+	WHERE prenotazioni.id = 7
+
+Le stanze sono state tutte prenotate almeno una volta? (Visualizzare le stanze non ancora prenotate)
+
+	SELECT * 
+	FROM `prenotazioni`
+	RIGHT JOIN `stanze`
+	ON prenotazioni.stanza_id = stanze.id
+	WHERE prenotazioni.stanza_id IS NULL

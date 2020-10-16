@@ -21,11 +21,12 @@ Fai una analisi per vedere se ci sono ore in cui le prenotazioni sono più frequ
 	SELECT HOUR(created_at) AS 'ore' , COUNT(HOUR(created_at)) AS 'n. prenotazioni'
 	FROM `prenotazioni`
 	GROUP BY HOUR(created_at)
+	ORDER BY COUNT(HOUR(created_at)) DESC
 
 Quante prenotazioni ha fatto l’ospite che ha fatto più prenotazioni?
 
-	#non saprei come mostrare solo chi ha fatto più prenotazioni perciò chi ne ha fatte di più esce in cima (3 comunque è il massimo)
 	SELECT `ospite_id`, COUNT(prenotazione_id)
 	FROM `prenotazioni_has_ospiti`
 	GROUP BY ospite_id
 	ORDER BY COUNT(prenotazione_id) DESC
+	LIMIT 1

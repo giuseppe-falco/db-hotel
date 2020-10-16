@@ -17,23 +17,6 @@ Stampare tutti gli ospiti per ogni prenotazione
 
 Stampare Nome, Cognome, Prezzo e Pagante per tutte le prenotazioni fatte a Maggio 2018
 	
-	!!controllare questo pezzo!!
-	
-	#versione originale che da troppi null
-	SELECT prenotazioni.created_at AS 'data_prenotazione', prenotazioni.id, ospiti.name AS 'nome_ospite', ospiti.lastname AS 'cognome_ospite', pagamenti.price, paganti.name AS 'nome_pagante', paganti.lastname AS 'cognome_pagante'
-	FROM prenotazioni
-	INNER JOIN prenotazioni_has_ospiti
-	ON prenotazioni.id = prenotazioni_has_ospiti.prenotazione_id
-	INNER JOIN ospiti
-	ON prenotazioni_has_ospiti.ospite_id = ospiti.id
-	LEFT JOIN paganti
-	ON ospiti.id = paganti.ospite_id
-	LEFT JOIN pagamenti
-	ON paganti.id = pagamenti.pagante_id
-	WHERE YEAR(prenotazioni.created_at) = 2018 AND MONTH(prenotazioni.created_at) = 5
-	ORDER BY prenotazioni.created_at
-	
-	#versione "alternativa" che sballa i prezzi 
 	SELECT prenotazioni.created_at AS 'data_prenotazione', prenotazioni.id, ospiti.name AS 'nome_ospite', ospiti.lastname AS 'cognome_ospite', pagamenti.price, paganti.name AS 'nome_pagante', paganti.lastname AS 'cognome_pagante'
 
 	FROM `prenotazioni`
